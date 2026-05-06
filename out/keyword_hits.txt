@@ -1,0 +1,18 @@
+[admin] (1)
+E:\claude_projects\file-finder\sample\admin-secrets\prod_passwords.txt
+
+[config] (1)
+E:\claude_projects\file-finder\sample\vpn-config\company.ovpn
+
+[password] (1)
+E:\claude_projects\file-finder\sample\admin-secrets\prod_passwords.txt
+
+[prod] (1)
+E:\claude_projects\file-finder\sample\admin-secrets\prod_passwords.txt
+
+[secret] (1)
+E:\claude_projects\file-finder\sample\admin-secrets\prod_passwords.txt
+
+[vpn] (1)
+E:\claude_projects\file-finder\sample\vpn-config\company.ovpn
+

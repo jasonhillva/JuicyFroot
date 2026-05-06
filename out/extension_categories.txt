@@ -1,0 +1,14 @@
+[Archives]
+.gz	1
+
+[Office docs / notes]
+.pdf	1
+.txt	2
+
+[Remote/admin tooling]
+.ovpn	1
+
+[Uncategorized]
+.jpg	1
+[no_ext]	1
+

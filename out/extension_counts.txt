@@ -1,0 +1,6 @@
+.gz	1
+.jpg	1
+.ovpn	1
+.pdf	1
+.txt	2
+[no_ext]	1
