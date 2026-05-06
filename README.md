@@ -12,6 +12,7 @@ It scans a folder tree and produces:
 - Keyword-based path hits
 - Directory tree output
 - Permission-denied path log (continues scanning)
+- User-editable extension category list (`extension_categories.json`)
 
 ## Features
 
@@ -21,6 +22,7 @@ It scans a folder tree and produces:
 - Security-focused extension categories (credentials/configs, keys, dumps, logs, etc.)
 - Keyword hit report for likely sensitive paths
 - Permission-safe traversal (logs errors, keeps going)
+- Extension categories are externalized in `extension_categories.json`
 - Colorized summary output with markers:
   - `[+]` group has matches
   - `[!]` group has no matches
@@ -66,6 +68,12 @@ Default output files:
 - `permission_errors.txt`
 - `tree.txt`
 
+Optional category file override:
+
+```bash
+juicyfroot scan /path/to/folder --categories-file /path/to/extension_categories.json
+```
+
 ### 2) List files by extension
 
 ```bash
@@ -107,6 +115,7 @@ At the end of `scan`, JuicyFroot prints:
 
 - The scan is path-name based for keyword detection (file/folder names and relative paths).
 - Permission errors are expected on some targets; they are logged to `permission_errors.txt` and do not stop the run.
+- Edit `extension_categories.json` to add/remove categorized extensions without changing code.
 
 ## License
 

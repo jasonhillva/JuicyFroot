@@ -1,0 +1,100 @@
+﻿{
+  "Credentials / configs": [
+    ".kdbx",
+    ".psafe3",
+    ".ini",
+    ".conf",
+    ".config",
+    ".cfg",
+    ".env",
+    ".yml",
+    ".yaml",
+    ".json",
+    ".xml",
+    ".properties",
+    ".cnf"
+  ],
+  "Scripts that may contain creds": [
+    ".ps1",
+    ".bat",
+    ".cmd",
+    ".vbs",
+    ".vbe",
+    ".js",
+    ".py",
+    ".pl",
+    ".sh",
+    ".sql"
+  ],
+  "Database / data dumps": [
+    ".sql",
+    ".bak",
+    ".backup",
+    ".dump",
+    ".dmp",
+    ".mdb",
+    ".accdb",
+    ".sqlite",
+    ".sqlite3",
+    ".db",
+    ".db3"
+  ],
+  "Keys / certificates": [
+    ".pem",
+    ".key",
+    ".pfx",
+    ".p12",
+    ".cer",
+    ".crt",
+    ".der",
+    ".ppk",
+    ".pub",
+    ".ssh"
+  ],
+  "Password managers / vaults": [
+    ".kdbx",
+    ".kdb",
+    ".1pif",
+    ".opvault",
+    ".enpassdb",
+    ".psafe3"
+  ],
+  "Office docs / notes": [
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".xlsm",
+    ".ppt",
+    ".pptx",
+    ".pdf",
+    ".txt",
+    ".rtf",
+    ".csv",
+    ".one"
+  ],
+  "Remote/admin tooling": [
+    ".rdp",
+    ".vnc",
+    ".ovpn",
+    ".wg",
+    ".mobileconfig",
+    ".reg"
+  ],
+  "Logs": [
+    ".log",
+    ".evtx",
+    ".trace",
+    ".out",
+    ".err"
+  ],
+  "Archives": [
+    ".zip",
+    ".7z",
+    ".rar",
+    ".tar",
+    ".gz",
+    ".tgz",
+    ".bz2"
+  ]
+}

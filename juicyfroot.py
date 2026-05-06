@@ -10,6 +10,7 @@ Features:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 from typing import Dict, Iterable, List
@@ -47,93 +48,86 @@ DEFAULT_KEYWORDS: List[str] = [
     "bind",
 ]
 
-EXTENSION_CATEGORIES: Dict[str, str] = {
-    # Credentials / configs
-    ".kdbx": "Credentials / configs",
-    ".psafe3": "Credentials / configs",
-    ".ini": "Credentials / configs",
-    ".conf": "Credentials / configs",
-    ".config": "Credentials / configs",
-    ".cfg": "Credentials / configs",
-    ".env": "Credentials / configs",
-    ".yml": "Credentials / configs",
-    ".yaml": "Credentials / configs",
-    ".json": "Credentials / configs",
-    ".xml": "Credentials / configs",
-    ".properties": "Credentials / configs",
-    ".cnf": "Credentials / configs",
-    # Scripts that may contain creds
-    ".ps1": "Scripts that may contain creds",
-    ".bat": "Scripts that may contain creds",
-    ".cmd": "Scripts that may contain creds",
-    ".vbs": "Scripts that may contain creds",
-    ".vbe": "Scripts that may contain creds",
-    ".js": "Scripts that may contain creds",
-    ".py": "Scripts that may contain creds",
-    ".pl": "Scripts that may contain creds",
-    ".sh": "Scripts that may contain creds",
-    ".sql": "Scripts that may contain creds",
-    # Database / data dumps
-    ".bak": "Database / data dumps",
-    ".backup": "Database / data dumps",
-    ".dump": "Database / data dumps",
-    ".dmp": "Database / data dumps",
-    ".mdb": "Database / data dumps",
-    ".accdb": "Database / data dumps",
-    ".sqlite": "Database / data dumps",
-    ".sqlite3": "Database / data dumps",
-    ".db": "Database / data dumps",
-    ".db3": "Database / data dumps",
-    # Keys / certificates
-    ".pem": "Keys / certificates",
-    ".key": "Keys / certificates",
-    ".pfx": "Keys / certificates",
-    ".p12": "Keys / certificates",
-    ".cer": "Keys / certificates",
-    ".crt": "Keys / certificates",
-    ".der": "Keys / certificates",
-    ".ppk": "Keys / certificates",
-    ".pub": "Keys / certificates",
-    ".ssh": "Keys / certificates",
-    # Password managers / vaults
-    ".kdb": "Password managers / vaults",
-    ".1pif": "Password managers / vaults",
-    ".opvault": "Password managers / vaults",
-    ".enpassdb": "Password managers / vaults",
-    # Office docs / notes
-    ".doc": "Office docs / notes",
-    ".docx": "Office docs / notes",
-    ".xls": "Office docs / notes",
-    ".xlsx": "Office docs / notes",
-    ".xlsm": "Office docs / notes",
-    ".ppt": "Office docs / notes",
-    ".pptx": "Office docs / notes",
-    ".pdf": "Office docs / notes",
-    ".txt": "Office docs / notes",
-    ".rtf": "Office docs / notes",
-    ".csv": "Office docs / notes",
-    ".one": "Office docs / notes",
-    # Remote/admin tooling
-    ".rdp": "Remote/admin tooling",
-    ".vnc": "Remote/admin tooling",
-    ".ovpn": "Remote/admin tooling",
-    ".wg": "Remote/admin tooling",
-    ".mobileconfig": "Remote/admin tooling",
-    ".reg": "Remote/admin tooling",
-    # Logs
-    ".log": "Logs",
-    ".evtx": "Logs",
-    ".trace": "Logs",
-    ".out": "Logs",
-    ".err": "Logs",
-    # Archives
-    ".zip": "Archives",
-    ".7z": "Archives",
-    ".rar": "Archives",
-    ".tar": "Archives",
-    ".gz": "Archives",
-    ".tgz": "Archives",
-    ".bz2": "Archives",
+DEFAULT_CATEGORIES_FILE = "extension_categories.json"
+
+DEFAULT_EXTENSION_CATEGORY_GROUPS: Dict[str, List[str]] = {
+    "Credentials / configs": [
+        ".kdbx",
+        ".psafe3",
+        ".ini",
+        ".conf",
+        ".config",
+        ".cfg",
+        ".env",
+        ".yml",
+        ".yaml",
+        ".json",
+        ".xml",
+        ".properties",
+        ".cnf",
+    ],
+    "Scripts that may contain creds": [
+        ".ps1",
+        ".bat",
+        ".cmd",
+        ".vbs",
+        ".vbe",
+        ".js",
+        ".py",
+        ".pl",
+        ".sh",
+        ".sql",
+    ],
+    "Database / data dumps": [
+        ".sql",
+        ".bak",
+        ".backup",
+        ".dump",
+        ".dmp",
+        ".mdb",
+        ".accdb",
+        ".sqlite",
+        ".sqlite3",
+        ".db",
+        ".db3",
+    ],
+    "Keys / certificates": [
+        ".pem",
+        ".key",
+        ".pfx",
+        ".p12",
+        ".cer",
+        ".crt",
+        ".der",
+        ".ppk",
+        ".pub",
+        ".ssh",
+    ],
+    "Password managers / vaults": [
+        ".kdbx",
+        ".kdb",
+        ".1pif",
+        ".opvault",
+        ".enpassdb",
+        ".psafe3",
+    ],
+    "Office docs / notes": [
+        ".doc",
+        ".docx",
+        ".xls",
+        ".xlsx",
+        ".xlsm",
+        ".ppt",
+        ".pptx",
+        ".pdf",
+        ".txt",
+        ".rtf",
+        ".csv",
+        ".one",
+    ],
+    "Remote/admin tooling": [".rdp", ".vnc", ".ovpn", ".wg", ".mobileconfig", ".reg"],
+    "Logs": [".log", ".evtx", ".trace", ".out", ".err"],
+    "Archives": [".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2"],
 }
 
 SUMMARY_LABELS: Dict[str, str] = {
@@ -152,6 +146,31 @@ RESET = "\033[0m"
 GREEN = "\033[92m"
 YELLOW = "\033[93m"
 CYAN = "\033[96m"
+
+
+def build_extension_category_map(category_groups: Dict[str, List[str]]) -> Dict[str, str]:
+    ext_map: Dict[str, str] = {}
+    for category, extensions in category_groups.items():
+        for ext in extensions:
+            normalized = ext.strip().lower()
+            if normalized and not normalized.startswith("."):
+                normalized = f".{normalized}"
+            if normalized:
+                ext_map[normalized] = category
+    return ext_map
+
+
+def load_extension_categories(config_path: Path) -> Dict[str, str]:
+    try:
+        if config_path.exists():
+            with config_path.open("r", encoding="utf-8-sig") as f:
+                groups = json.load(f)
+            if not isinstance(groups, dict):
+                raise ValueError("Category config must be a JSON object.")
+            return build_extension_category_map(groups)
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"{YELLOW}[!]{RESET} Failed to load {config_path}: {e}. Using built-in defaults.")
+    return build_extension_category_map(DEFAULT_EXTENSION_CATEGORY_GROUPS)
 
 
 def normalize_extension(path: Path) -> str:
@@ -223,10 +242,12 @@ def write_extension_counts(index: Dict[str, List[Path]], out_file: Path) -> None
             f.write(f"{ext}\t{len(paths)}\n")
 
 
-def write_categorized_extensions(index: Dict[str, List[Path]], out_file: Path) -> None:
+def write_categorized_extensions(
+    index: Dict[str, List[Path]], extension_categories: Dict[str, str], out_file: Path
+) -> None:
     grouped: Dict[str, List[str]] = {}
     for ext, paths in index.items():
-        category = EXTENSION_CATEGORIES.get(ext, "Uncategorized")
+        category = extension_categories.get(ext, "Uncategorized")
         grouped.setdefault(category, []).append(f"{ext}\t{len(paths)}")
 
     out_file.parent.mkdir(parents=True, exist_ok=True)
@@ -238,10 +259,12 @@ def write_categorized_extensions(index: Dict[str, List[Path]], out_file: Path) -
             f.write("\n")
 
 
-def write_juicy_paths(index: Dict[str, List[Path]], out_file: Path) -> None:
+def write_juicy_paths(
+    index: Dict[str, List[Path]], extension_categories: Dict[str, str], out_file: Path
+) -> None:
     grouped_paths: Dict[str, List[Path]] = {}
     for ext, paths in index.items():
-        category = EXTENSION_CATEGORIES.get(ext)
+        category = extension_categories.get(ext)
         if not category:
             continue
         grouped_paths.setdefault(category, []).extend(paths)
@@ -260,10 +283,10 @@ def write_juicy_paths(index: Dict[str, List[Path]], out_file: Path) -> None:
             f.write("\n")
 
 
-def print_category_summary(index: Dict[str, List[Path]]) -> None:
+def print_category_summary(index: Dict[str, List[Path]], extension_categories: Dict[str, str]) -> None:
     totals: Dict[str, int] = {}
     for ext, paths in index.items():
-        category = EXTENSION_CATEGORIES.get(ext)
+        category = extension_categories.get(ext)
         if not category:
             continue
         totals[category] = totals.get(category, 0) + len(paths)
@@ -338,6 +361,7 @@ def scan_command(
     keyword_out: Path | None,
     permission_errors_out: Path | None,
     keywords: List[str],
+    extension_categories: Dict[str, str],
     tree_out: Path | None,
 ) -> None:
     denied_paths: List[Path] = []
@@ -351,11 +375,11 @@ def scan_command(
         print(f"Wrote extension counts to: {counts_out}")
 
     if categorized_out is not None:
-        write_categorized_extensions(index, categorized_out)
+        write_categorized_extensions(index, extension_categories, categorized_out)
         print(f"Wrote categorized extension report to: {categorized_out}")
 
     if juicy_out is not None:
-        write_juicy_paths(index, juicy_out)
+        write_juicy_paths(index, extension_categories, juicy_out)
         print(f"Wrote categorized file paths to: {juicy_out}")
 
     if keyword_out is not None:
@@ -373,7 +397,7 @@ def scan_command(
         print(f"Wrote permission error paths to: {permission_errors_out}")
         print(f"Permission/access errors: {len(set(denied_paths))}")
 
-    print_category_summary(index)
+    print_category_summary(index, extension_categories)
 
 
 def list_by_extension_command(root: Path, extension: str, out_file: Path | None) -> None:
@@ -381,7 +405,8 @@ def list_by_extension_command(root: Path, extension: str, out_file: Path | None)
     if normalized and not normalized.startswith(".") and normalized != "[no_ext]":
         normalized = f".{normalized}"
 
-    index = build_extension_index(root)
+    denied_paths: List[Path] = []
+    index = build_extension_index(root, denied_paths)
     matches = index.get(normalized, [])
 
     lines = [str(p) for p in matches]
@@ -457,6 +482,12 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_KEYWORDS,
         help="Optional keyword list override (default: built-in keyword set)",
     )
+    scan_parser.add_argument(
+        "--categories-file",
+        type=Path,
+        default=Path(__file__).resolve().parent / DEFAULT_CATEGORIES_FILE,
+        help="JSON file mapping categories to extension arrays",
+    )
 
     list_parser = subparsers.add_parser(
         "list-by-ext", help="List files that match a specific extension."
@@ -495,6 +526,7 @@ def main() -> None:
         raise SystemExit(f"Root path is not a directory: {root}")
 
     if args.command == "scan":
+        extension_categories = load_extension_categories(args.categories_file)
         scan_command(
             root,
             args.extensions_out,
@@ -504,6 +536,7 @@ def main() -> None:
             args.keyword_out,
             args.permission_errors_out,
             args.keywords,
+            extension_categories,
             args.tree_out,
         )
     elif args.command == "list-by-ext":
