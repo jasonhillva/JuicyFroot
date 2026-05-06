@@ -1,5 +1,8 @@
 ﻿# juicyfroot
 
+![juicyfroot banner](images/juicyfroot.png)
+
+
 `juicyfroot` is a Python CLI for recursive file discovery and triage.
 
 It scans a folder tree and produces:
@@ -30,13 +33,13 @@ It scans a folder tree and produces:
 ## Quick Start
 
 ```bash
-python3 file_finder.py scan /path/to/folder
+python3 juicyfroot.py scan /path/to/folder
 ```
 
 Windows PowerShell:
 
 ```powershell
-python .\file_finder.py scan C:\path\to\folder
+python .\juicyfroot.py scan C:\path\to\folder
 ```
 
 ## Commands
@@ -44,7 +47,7 @@ python .\file_finder.py scan C:\path\to\folder
 ### 1) Scan (all reports in one run)
 
 ```bash
-python3 file_finder.py scan /path/to/folder \
+python3 juicyfroot.py scan /path/to/folder \
   --extensions-out extensions.txt \
   --counts-out extension_counts.txt \
   --categorized-out extension_categories.txt \
@@ -64,7 +67,7 @@ Default output files:
 ### 2) List files by extension
 
 ```bash
-python3 file_finder.py list-by-ext /path/to/folder .pdf --out pdf_files.txt
+python3 juicyfroot.py list-by-ext /path/to/folder .pdf --out pdf_files.txt
 ```
 
 Accepted extension formats:
@@ -75,7 +78,7 @@ Accepted extension formats:
 ### 3) Tree only
 
 ```bash
-python3 file_finder.py tree /path/to/folder --out tree.txt
+python3 juicyfroot.py tree /path/to/folder --out tree.txt
 ```
 
 ## Keyword Scanning
@@ -87,7 +90,7 @@ Built-in default keywords:
 Override keywords:
 
 ```bash
-python3 file_finder.py scan /path/to/folder --keywords password token ldap
+python3 juicyfroot.py scan /path/to/folder --keywords password token ldap
 ```
 
 ## Output Summary
@@ -106,3 +109,4 @@ At the end of `scan`, juicyfroot prints:
 ## License
 
 Add your preferred license (MIT recommended for public repos).
+

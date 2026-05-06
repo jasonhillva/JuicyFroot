@@ -1,6 +1,0 @@
-.gz
-.jpg
-.ovpn
-.pdf
-.txt
-[no_ext]
