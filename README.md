@@ -1,6 +1,6 @@
 ﻿# JuicyFroot
 
-![juicyfroot banner](images/juicyfroot.png)
+![JuicyFroot banner](images/juicyfroot.png)
 
 
 `JuicyFroot` is a Python CLI for recursive file discovery and triage.
@@ -33,7 +33,7 @@ It scans a folder tree and produces:
 ## Quick Start
 
 ```bash
-python3 juicyfroot.py scan /path/to/folder
+juicyfroot scan /path/to/folder
 ```
 
 Windows PowerShell:
@@ -47,10 +47,11 @@ python .\juicyfroot.py scan C:\path\to\folder
 ### 1) Scan (all reports in one run)
 
 ```bash
-python3 juicyfroot.py scan /path/to/folder \
+juicyfroot scan /path/to/folder \
   --extensions-out extensions.txt \
   --counts-out extension_counts.txt \
   --categorized-out extension_categories.txt \
+  --juicy-out juicy.txt \
   --keyword-out keyword_hits.txt \
   --permission-errors-out permission_errors.txt \
   --tree-out tree.txt
@@ -60,6 +61,7 @@ Default output files:
 - `extensions.txt`
 - `extension_counts.txt`
 - `extension_categories.txt`
+- `juicy.txt`
 - `keyword_hits.txt`
 - `permission_errors.txt`
 - `tree.txt`
@@ -108,7 +110,7 @@ At the end of `scan`, JuicyFroot prints:
 
 ## License
 
-Add your preferred license (MIT recommended for public repos).
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
 
 
 
