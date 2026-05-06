@@ -1,9 +1,9 @@
-﻿# juicyfroot
+﻿# JuicyFroot
 
 ![juicyfroot banner](images/juicyfroot.png)
 
 
-`juicyfroot` is a Python CLI for recursive file discovery and triage.
+`JuicyFroot` is a Python CLI for recursive file discovery and triage.
 
 It scans a folder tree and produces:
 - Unique file extensions
@@ -95,7 +95,7 @@ python3 juicyfroot.py scan /path/to/folder --keywords password token ldap
 
 ## Output Summary
 
-At the end of `scan`, juicyfroot prints:
+At the end of `scan`, JuicyFroot prints:
 - Total files scanned
 - Keyword groups matched
 - Permission/access error count
@@ -109,4 +109,6 @@ At the end of `scan`, juicyfroot prints:
 ## License
 
 Add your preferred license (MIT recommended for public repos).
+
+
 
