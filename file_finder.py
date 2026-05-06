@@ -238,6 +238,28 @@ def write_categorized_extensions(index: Dict[str, List[Path]], out_file: Path) -
             f.write("\n")
 
 
+def write_juicy_paths(index: Dict[str, List[Path]], out_file: Path) -> None:
+    grouped_paths: Dict[str, List[Path]] = {}
+    for ext, paths in index.items():
+        category = EXTENSION_CATEGORIES.get(ext)
+        if not category:
+            continue
+        grouped_paths.setdefault(category, []).extend(paths)
+
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    with out_file.open("w", encoding="utf-8") as f:
+        if not grouped_paths:
+            f.write("No categorized extension matches found.\n")
+            return
+
+        for category in sorted(grouped_paths.keys()):
+            unique_sorted_paths = sorted(set(grouped_paths[category]), key=lambda p: str(p).lower())
+            f.write(f"[{category}] ({len(unique_sorted_paths)})\n")
+            for p in unique_sorted_paths:
+                f.write(f"{p}\n")
+            f.write("\n")
+
+
 def print_category_summary(index: Dict[str, List[Path]]) -> None:
     totals: Dict[str, int] = {}
     for ext, paths in index.items():
@@ -312,6 +334,7 @@ def scan_command(
     extensions_out: Path,
     counts_out: Path | None,
     categorized_out: Path | None,
+    juicy_out: Path | None,
     keyword_out: Path | None,
     permission_errors_out: Path | None,
     keywords: List[str],
@@ -330,6 +353,10 @@ def scan_command(
     if categorized_out is not None:
         write_categorized_extensions(index, categorized_out)
         print(f"Wrote categorized extension report to: {categorized_out}")
+
+    if juicy_out is not None:
+        write_juicy_paths(index, juicy_out)
+        print(f"Wrote categorized file paths to: {juicy_out}")
 
     if keyword_out is not None:
         hits = build_keyword_hits(root, keywords, denied_paths)
@@ -407,6 +434,12 @@ def parse_args() -> argparse.Namespace:
         help="Output file for categorized extension counts (default: extension_categories.txt)",
     )
     scan_parser.add_argument(
+        "--juicy-out",
+        type=Path,
+        default=Path("juicy.txt"),
+        help="Output file with categorized matched file paths (default: juicy.txt)",
+    )
+    scan_parser.add_argument(
         "--keyword-out",
         type=Path,
         default=Path("keyword_hits.txt"),
@@ -467,6 +500,7 @@ def main() -> None:
             args.extensions_out,
             args.counts_out,
             args.categorized_out,
+            args.juicy_out,
             args.keyword_out,
             args.permission_errors_out,
             args.keywords,
