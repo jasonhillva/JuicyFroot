@@ -361,6 +361,8 @@ def scan_command(
     keyword_out: Path | None,
     permission_errors_out: Path | None,
     keywords: List[str],
+    extra_keywords: List[str],
+    only_keywords: bool,
     extension_categories: Dict[str, str],
     tree_out: Path | None,
 ) -> None:
@@ -383,7 +385,14 @@ def scan_command(
         print(f"Wrote categorized file paths to: {juicy_out}")
 
     if keyword_out is not None:
-        hits = build_keyword_hits(root, keywords, denied_paths)
+        effective_keywords = (
+            extra_keywords
+            if only_keywords
+            else [*keywords, *extra_keywords]
+        )
+        # Preserve order but remove duplicates.
+        effective_keywords = list(dict.fromkeys(effective_keywords))
+        hits = build_keyword_hits(root, effective_keywords, denied_paths)
         write_keyword_hits(hits, keyword_out)
         print(f"Wrote keyword hit report to: {keyword_out}")
         print(f"Keywords with matches: {len(hits)}")
@@ -483,6 +492,17 @@ def parse_args() -> argparse.Namespace:
         help="Optional keyword list override (default: built-in keyword set)",
     )
     scan_parser.add_argument(
+        "--keyword",
+        action="append",
+        default=[],
+        help="Add one keyword (repeatable). Example: --keyword password",
+    )
+    scan_parser.add_argument(
+        "--only-keyword",
+        action="store_true",
+        help="Use only keyword(s) provided via --keyword (ignore default/bulk --keywords list)",
+    )
+    scan_parser.add_argument(
         "--categories-file",
         type=Path,
         default=Path(__file__).resolve().parent / DEFAULT_CATEGORIES_FILE,
@@ -536,6 +556,8 @@ def main() -> None:
             args.keyword_out,
             args.permission_errors_out,
             args.keywords,
+            args.keyword,
+            args.only_keyword,
             extension_categories,
             args.tree_out,
         )
